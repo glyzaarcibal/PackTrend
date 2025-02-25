@@ -1,20 +1,35 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, View, SafeAreaView } from "react-native";
+import Header from "./Screens/Shared/Header";
+import ProductContainer from "./Screens/Product/ProductContainer";
+import { NavigationContainer } from "@react-navigation/native";
+import Main from "./Navigators/Main";
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
+    return (
+        <SafeAreaView style={styles.safeContainer}>
+            <StatusBar style="light" />
+            <NavigationContainer>
+                <View style={styles.container}>
+                    <Header />
+                    <Main />
+                </View>
+            </NavigationContainer>
+        </SafeAreaView>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+    safeContainer: {
+        flex: 1,
+        backgroundColor: "#f5f5f5", // Light gray background
+    },
+    container: {
+        flex: 1,
+        backgroundColor: "#fff",
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+        overflow: "hidden",
+    },
 });
+
