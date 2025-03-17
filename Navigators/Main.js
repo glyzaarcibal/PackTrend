@@ -1,58 +1,90 @@
-import React, { useContext } from "react";
+import React, { useState } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { View } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
+import { View, useColorScheme } from "react-native";
+import { FontAwesome } from '@expo/vector-icons';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import Entypo from '@expo/vector-icons/Entypo';
 import HomeNavigator from "./HomeNavigator";
+import CartNavigator from "./CartNavigator";    
+import ProductContainer from "../Screens/Product/ProductContainer";
+import Header from "../Screens/Shared/Header";
+import { useTheme } from 'react-native-paper';
+import UserNavigator from "./UserNavigator";
+import AdminNavigator from "./AdminNavigator";
+import CartIcon from "../Screens/Shared/CartIcon";
+import Icon from '@expo/vector-icons/FontAwesome'; // Import Icon component
+
 const Tab = createBottomTabNavigator();
+
 const Main = () => {
+    const theme = useTheme(); // Get theme safely
+    const colorScheme = useColorScheme();
+    const isDarkMode = colorScheme === 'dark';
+
+    const [darkMode, setDarkMode] = useState(isDarkMode);
+
+    const toggleTheme = () => {
+        setDarkMode(!darkMode);
+    };
+
+    if (!theme) {
+      console.warn("Theme is undefined in Main"); // Debugging
+      return null; // Prevent crashes
+    }
+
     return (
-        <Tab.Navigator
-            initialRouteName="Home"
-            screenOptions={ {
+        <View style={{ flex: 1, backgroundColor: darkMode ? "#121212" : "#fff" }}>
+
+            <Tab.Navigator
+            initialRouteName="Main"
+            screenOptions={{
                 tabBarHideOnKeyboard: true,
                 tabBarShowLabel: false,
-                tabBarActiveTintColor: '#e91e63',
-                headerShown: false,
+                tabBarActiveTintColor: '#e91e63'
             }}
-          
-           
-        >
+             >
+                
             <Tab.Screen
-                name="Home"
+                name="Main"
                 component={HomeNavigator}
                 options={{
-                    tabBarIcon: ({color}) => {
+                    tabBarIcon: ({ color }) => {
                         return <Icon
                             name="home"
-                            style={{position: "relative"}}
+                            style={{ position: "relative" }}
                             color={color}
                             size={30}
                         />
                     }
                 }}
             />
+
             <Tab.Screen
                 name="Cart"
-                component={HomeNavigator}
+                component={CartNavigator}
                 options={{
-                    tabBarIcon: ({color}) => {
-                        return <Icon
-                            name="shopping-cart"
-                            style={{position: "relative"}}
-                            color={color}
-                            size={30}
-                        />
+                    tabBarIcon: ({ color }) => {
+                        return <>
+                            <Icon
+                                name="shopping-cart"
+                                style={{ position: "relative" }}
+                                color={color}
+                                size={30}
+                            />
+                            <CartIcon />
+                        </>
                     }
                 }}
             />
+
             <Tab.Screen
                 name="Admin"
-                component={HomeNavigator}
+                component={AdminNavigator}
                 options={{
-                    tabBarIcon: ({color}) => {
+                    tabBarIcon: ({ color }) => {
                         return <Icon
                             name="cog"
-                            style={{position: "relative"}}
+                            style={{ position: "relative" }}
                             color={color}
                             size={30}
                         />
@@ -61,12 +93,12 @@ const Main = () => {
             />
             <Tab.Screen
                 name="User"
-                component={HomeNavigator}
+                component={UserNavigator}
                 options={{
-                    tabBarIcon: ({color}) => {
+                    tabBarIcon: ({ color }) => {
                         return <Icon
                             name="user"
-                            style={{position: "relative"}}
+                            style={{ position: "relative" }}
                             color={color}
                             size={30}
                         />
@@ -74,6 +106,8 @@ const Main = () => {
                 }}
             />
         </Tab.Navigator>
-    )
-}
-export default Main
+        </View>
+    );
+};
+
+export default Main;

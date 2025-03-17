@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
-import { View, ScrollView, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
-import { Surface, Text, Searchbar } from 'react-native-paper';
-import { Ionicons } from "@expo/vector-icons";
-import ProductList from './ProductList';
+import { View, ScrollView, StyleSheet, Dimensions } from "react-native";
+import { Surface, Text, Searchbar } from "react-native-paper";
 import Banner from "../Shared/Banner";
-import SearchedProduct from "./SearchedProduct";
 import CategoryFilter from "./CategoryFilter";
+import ProductList from "./ProductList";
+import { useTheme } from "../../context/ThemeContext"; // Import ThemeContext
 
-const data = require('../../assets/data/products.json');
-const productCategories = require('../../assets/data/categories.json');
+const data = require("../../assets/data/products.json");
+const productCategories = require("../../assets/data/categories.json");
 
-var { height, width } = Dimensions.get('window');
+var { height } = Dimensions.get("window");
 
 const ProductContainer = ({ navigation }) => {
+    const { isDarkMode } = useTheme(); // Use global theme state
+
     const [products, setProducts] = useState([]);
     const [productsFiltered, setProductsFiltered] = useState([]);
     const [focus, setFocus] = useState(false);
@@ -20,29 +21,7 @@ const ProductContainer = ({ navigation }) => {
     const [active, setActive] = useState([]);
     const [initialState, setInitialState] = useState([]);
     const [productsCtg, setProductsCtg] = useState([]);
-    const [keyword, setKeyword] = useState('');
-
-    const searchProduct = (text) => {
-        setProductsFiltered(
-            products.filter((i) => i.name.toLowerCase().includes(text.toLowerCase()))
-        );
-    };
-
-    const onBlur = () => {
-        setFocus(false);
-        setKeyword('');
-    };
-
-    const changeCtg = (ctg) => {
-        ctg === "all"
-            ? [setProductsCtg(initialState), setActive(true)]
-            : [
-                setProductsCtg(
-                    products.filter((i) => i.category.$oid === ctg),
-                    setActive(true)
-                ),
-            ];
-    };
+    const [keyword, setKeyword] = useState("");
 
     useEffect(() => {
         setProducts(data);
@@ -52,49 +31,42 @@ const ProductContainer = ({ navigation }) => {
         setActive(-1);
         setInitialState(data);
         setProductsCtg(data);
-
-        return () => {
-            setProducts([]);
-            setProductsFiltered([]);
-            setCategories([]);
-            setActive();
-            setInitialState();
-        };
     }, []);
 
     return (
-        <Surface width="100%" style={{ flex: 1, alignItems: 'center',backgroundColor: "#6200ea", justifyContent: 'center' }}>
-            {/* Search Bar with Cart Icon */}
+        <Surface
+            width="100%"
+            style={[
+                styles.container,
+                { backgroundColor: isDarkMode ? "#121212" : "white" }, // Apply dark mode
+            ]}
+        >
             <View style={styles.searchContainer}>
                 <Searchbar
                     placeholder="Search"
-                    onChangeText={(text) => [searchProduct(text), setKeyword(text), setFocus(true)]}
+                    onChangeText={(text) => [setKeyword(text), setFocus(true)]}
                     value={keyword}
-                    onClearIconPress={onBlur}
+                    onClearIconPress={() => setFocus(false)}
                     style={styles.searchBar}
                 />
-                {/* Shopping Cart Icon */}
-                <TouchableOpacity onPress={() => navigation.navigate("Cart")}>
-                    <Ionicons name="cart" size={30} color="white" style={styles.cartIcon} />
-                </TouchableOpacity>
             </View>
 
             {focus ? (
-                <SearchedProduct productsFiltered={productsFiltered} />
+                <Text style={{ color: isDarkMode ? "#fff" : "#000" }}>Searching...</Text>
             ) : (
                 <ScrollView>
+                    <Banner />
+                   
                     <View>
-                        <Banner />
+                        <Text style={[styles.title , { color: isDarkMode ? "#fff" : "#000" }]}>Shop by categories</Text>
+                        <CategoryFilter categories={categories} active={active} setActive={setActive} categoryFilter={(id) => {
+                            const filtered = id === 'all' ? initialState : initialState.filter(p => p.category.$oid === id);
+                            setProductsCtg(filtered);
+                        }} />
+                        
                     </View>
-                    <View>
-                        <CategoryFilter
-                            categories={categories}
-                            categoryFilter={changeCtg}
-                            productsCtg={productsCtg}
-                            active={active}
-                            setActive={setActive}
-                        />
-                    </View>
+                    <Text style={[styles.headerText, { color: isDarkMode ? "#fff" : "#000" }]}>Products</Text>
+
                     {productsCtg.length > 0 ? (
                         <View style={styles.listContainer}>
                             {productsCtg.map((item) => (
@@ -103,7 +75,7 @@ const ProductContainer = ({ navigation }) => {
                         </View>
                     ) : (
                         <View style={[styles.center, { height: height / 2 }]}>
-                            <Text>No products found</Text>
+                            <Text style={{ color: isDarkMode ? "#fff" : "#000" }}>No products found</Text>
                         </View>
                     )}
                 </ScrollView>
@@ -114,35 +86,47 @@ const ProductContainer = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     container: {
-        flexWrap: "wrap",
-        backgroundColor: "gainsboro",
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: "bold",
+        textAlign: "left",
+        marginVertical: 10,
+        marginLeft: 10,
+        textAlign: "center",
+    },
+    headerText: {
+        fontSize: 18,
+        fontWeight: "bold",
+        textAlign: "left",
+        marginVertical: 10,
+        marginLeft: 10,
     },
     searchContainer: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
         width: "98%",
         marginVertical: 10,
     },
     searchBar: {
         flex: 1,
         marginRight: 10,
-    },
-    cartIcon: {
-        padding: 10,
+        borderRadius: 8,
+        height: 40,
     },
     listContainer: {
-        height: height,
-        flex: 1,
         flexDirection: "row",
-        alignItems: "flex-start",
         flexWrap: "wrap",
         backgroundColor: "gainsboro",
+
     },
     center: {
-        justifyContent: 'center',
-        alignItems: 'center'
-    }
+        justifyContent: "center",
+        alignItems: "center",
+    },
 });
 
 export default ProductContainer;

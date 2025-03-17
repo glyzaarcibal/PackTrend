@@ -1,11 +1,12 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, ScrollView, View, Text } from 'react-native';
-import { Badge } from 'react-native-paper';
+import { StyleSheet, TouchableOpacity, ScrollView, View, Text, ImageBackground } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const CategoryFilter = (props) => {
     return (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scrollView}>
             <View style={styles.container}>
+
                 {/* "All" Category */}
                 <TouchableOpacity
                     key="all"
@@ -15,10 +16,18 @@ const CategoryFilter = (props) => {
                     }}
                     style={[styles.categoryItem, props.active === -1 && styles.activeCategory]}
                 >
-                    <Text style={[styles.categoryText, props.active === -1 && styles.activeText]}>All</Text>
+                    <ImageBackground 
+                        source={{ uri: 'https://cdn0.onehowto.com/en/posts/9/5/1/all_the_different_types_of_bags_and_their_uses_7159_orig.jpg' }} 
+                        style={styles.categoryImage} 
+                        imageStyle={{ borderRadius: 10 }} 
+                    >
+                        <LinearGradient colors={['transparent', 'rgba(0,0,0,0.7)']} style={styles.overlay}>
+                            <Text style={[styles.categoryText, props.active === -1 && styles.activeText]}>All</Text>
+                        </LinearGradient>
+                    </ImageBackground>
                 </TouchableOpacity>
 
-                {/* Dynamic Categories */}
+                {/* Dynamic Categories with Full-Size Images */}
                 {props.categories.map((item, index) => (
                     <TouchableOpacity
                         key={item._id.$oid}
@@ -28,9 +37,17 @@ const CategoryFilter = (props) => {
                         }}
                         style={[styles.categoryItem, props.active === index && styles.activeCategory]}
                     >
-                        <Text style={[styles.categoryText, props.active === index && styles.activeText]}>
-                            {item.name}
-                        </Text>
+                        <ImageBackground 
+                            source={{ uri: item.image }} 
+                            style={styles.categoryImage} 
+                            imageStyle={{ borderRadius: 10 }}
+                        >
+                            <LinearGradient colors={['transparent', 'rgba(0,0,0,0.7)']} style={styles.overlay}>
+                                <Text style={[styles.categoryText, props.active === index && styles.activeText]}>
+                                    {item.name}
+                                </Text>
+                            </LinearGradient>
+                        </ImageBackground>
                     </TouchableOpacity>
                 ))}
             </View>
@@ -46,25 +63,45 @@ const styles = StyleSheet.create({
     container: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 10,
+        paddingHorizontal: 5,
     },
     categoryItem: {
-        backgroundColor: '#e0e0e0', // Default color
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 20, // Rounded Pills
-        marginHorizontal: 5,
+        borderRadius: 10,
+        overflow: 'hidden',
+        marginHorizontal: 6,
+        shadowColor: '#000',
+        shadowOpacity: 0.15,
+        shadowRadius: 4,
+        elevation: 4,
+        backgroundColor: '#f0f0f0',
+        width: 100,  // Adjust width
+        height: 100, // Adjust height
     },
-    activeCategory: {
-        backgroundColor: '#ff6f61', // Active color
+    categoryImage: {
+        width: '100%',
+        height: '100%',
+        justifyContent: 'flex-end',
+    },
+    overlay: {
+        width: '100%',
+        height: '100%',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        borderRadius: 10,
+        paddingBottom: 5,
     },
     categoryText: {
         fontSize: 14,
         fontWeight: 'bold',
-        color: '#555',
+        color: '#fff',
+        textAlign: 'center',
+    },
+    activeCategory: {
+        borderWidth: 2,
+        borderColor: '#ff7e5f',
     },
     activeText: {
-        color: '#fff', // White text for active
+        color: '#fff',
     },
 });
 

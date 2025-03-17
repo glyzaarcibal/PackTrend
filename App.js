@@ -1,35 +1,46 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View, SafeAreaView } from "react-native";
-import Header from "./Screens/Shared/Header";
-import ProductContainer from "./Screens/Product/ProductContainer";
-import { NavigationContainer } from "@react-navigation/native";
-import Main from "./Navigators/Main";
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View, useColorScheme } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { Provider } from "react-redux";
+import { Provider as PaperProvider, DefaultTheme, DarkTheme } from 'react-native-paper';
+import Toast from "react-native-toast-message";
+import { ThemeProvider } from './context/ThemeContext';
+
+import Header from './Screens/Shared/Header';
+import DrawerNavigator from './Navigators/DrawerNavigator';
+import store from './Redux/store';
+import Auth from './context/Store/Auth';
+import Main from './Navigators/Main';
 
 export default function App() {
-    return (
-        <SafeAreaView style={styles.safeContainer}>
-            <StatusBar style="light" />
+  const colorScheme = useColorScheme(); // Detects system theme
+  const theme = colorScheme === 'dark' ? DarkTheme : DefaultTheme; // Set theme
+
+  return (
+    <Auth>
+      <Provider store={store}>
+        <ThemeProvider> {/* ✅ Wrap the entire app inside ThemeProvider */}
+          <PaperProvider theme={theme}>  
             <NavigationContainer>
-                <View style={styles.container}>
-                    <Header />
-                    <Main />
-                </View>
+              
+              {/* ✅ DrawerNavigator should include Main inside it */}
+              <DrawerNavigator /> 
+              {/* ❌ REMOVE <Main /> from here */}
+              <Toast />
             </NavigationContainer>
-        </SafeAreaView>
-    );
+          </PaperProvider>
+        </ThemeProvider>
+      </Provider>
+    </Auth>
+  );
 }
 
-const styles = StyleSheet.create({
-    safeContainer: {
-        flex: 1,
-        backgroundColor: "#f5f5f5", // Light gray background
-    },
-    container: {
-        flex: 1,
-        backgroundColor: "#fff",
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        overflow: "hidden",
-    },
-});
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },  
+});

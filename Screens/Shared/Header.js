@@ -1,50 +1,56 @@
-import React from "react";
-import { StyleSheet, Image, SafeAreaView, View, Text, Platform } from "react-native";
+import React from 'react';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { useTheme } from '../../context/ThemeContext'; // Use your custom ThemeContext
 
 const Header = () => {
-    return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <Image
-                    source={{
-                        uri: "https://static.vecteezy.com/system/resources/previews/007/636/978/non_2x/shopping-bag-logo-icon-design-template-free-vector.jpg",
-                    }}
-                    resizeMode="contain"
-                    style={styles.logo}
-                />
-                <Text style={styles.title}>PackTrend</Text>
-            </View>
-        </SafeAreaView>
-    );
+  const { isDarkMode, toggleTheme } = useTheme(); // Get theme state and toggle function
+
+  return (
+    <View className='flex-row  mx-4 mt-2 justify-between items-center py-8' style={styles.NavbarContainer}>
+      {/* Left Section: Logo and Shopping Bag Icon */}
+      <View className="">
+        <Pressable>
+          <Text className="dark:text-white">
+            <FontAwesome name="shopping-bag" size={24} />
+          </Text>
+        </Pressable>
+        <View>
+        <Text className="font-bold text-2xl dark:text-white ">bagzz</Text>
+        </View>
+      </View>
+
+      {/* Right Section: Dark Mode Toggle */}
+      <Pressable onPress={toggleTheme}>
+        <Text className="dark:text-stone-50">
+          <MaterialIcons name="dark-mode" size={30} />
+        </Text>
+      </Pressable>
+    </View>
+  );
 };
 
-const styles = StyleSheet.create({
-    container: {
-        width: "100%",
-        backgroundColor: "#6200ea",
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        shadowColor: "#000",
-        shadowOpacity: 0.2,
-        shadowOffset: { width: 0, height: 2 },
-        elevation: 5,
-        paddingTop: Platform.OS === "ios" ? 50 : 30, // Adjust top spacing for iOS & Android
-    },
-    header: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    logo: {
-        height: 40,
-        width: 40,
-        marginRight: 10,
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: "bold",
-        color: "#fff",
-    },
-});
-
 export default Header;
+
+const styles = StyleSheet.create({
+  NavbarContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 8,
+      marginHorizontal: 16,
+      marginTop: 8,
+  },
+  iconText: {
+      color: "black", // Default color, overridden by dark mode styles in className
+  },
+  brandText: {
+      fontSize: 24,
+      fontWeight: "bold",
+      color: "black", // Default color, overridden by dark mode styles in className
+  },
+  darkModeIcon: {
+      color: "black", // Default, will be overridden by Tailwind dark mode
+  },
+
+});
